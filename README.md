@@ -10,6 +10,8 @@
 
 Systems-level work that deals with low-level details like **memory management**, **data representation**, and **concurrency** — basically, "lower-level control."
 
+- High level ergonomics and low level control are usually at odds, but rust challenges that.
+
 - Rust can be used for low-level programming like building web servers, CLIs, and many other kinds of software.
 - Safety, productivity, speed, and ergonomics are **not** trade-offs with Rust — it gives a balance of all.
 - **Linker** — Rust uses this to join compiled outputs into one file.
@@ -21,7 +23,7 @@ Systems-level work that deals with low-level details like **memory management**,
 ## Core Concepts
 
 - The `main` function is always the first code that runs in every executable Rust program.
-- **rustc** is Rust's compiler. It reads your code, checks for errors, and compiles it into a binary executable your computer can run. In simple terms: *"Turn this Rust source code into a machine program."*
+- **rustc** is Rust's compiler. It reads your code, checks for errors, and compiles it into a binary executable your computer can run. In simple terms: _"Turn this Rust source code into a machine program."_
 - When you use `!` like in `println!("Hello, world")` you are calling a **macro** as opposed to a function. Macros and functions follow different conventions.
 - **Rust is an ahead-of-time compiled language**, meaning you can compile a program and give the executable to someone else, and they can run it without even having Rust installed.
 
@@ -72,7 +74,14 @@ Cargo is Rust's **build system and package manager** (manages packages/dependenc
 
 Unlike `rustc`, Cargo creates an executable file in a `target/debug` directory (because by default the build is a debug build).
 
-Example: `target/debug/hello-cargo` executable
+Example: `./target/debug/hello-cargo` executable
+
+what does `cargo build` do? it creates and executable in target/debug - because the default build is a debug build.
+running `cargo build` for the first time creates a file at the top level `cargo.lock` - this tracks the exact versions of dependencies in your project think `package-lock.json`
+
+`cargo run` compiles the code into the binary executable and runs it all at the same time. If no files changed after running `cargo build` or `cargo run` once, the next `cargo run` run will not contain compiling response.
+
+`cargo check` is a handy and way faster way to confirm your code compiles while in development, without producing a binary executable.
 
 ### Building for Release
 
@@ -102,6 +111,7 @@ let mut bananas = 5; // mutable (we added `mut` to make this variable mutable)
 An **associated function** is a function that is implemented on a type.
 
 Example: `String::new()`
+
 - `String` is the type
 - `new()` is the associated function
 - It creates a new empty string
@@ -157,7 +167,7 @@ read_line(&mut guess)
 This does two things:
 
 1. If the result is `Err` - crash the program and print "Failed to read line"
-2. If the result is `Ok` - return the value inside
+2. If the result is `Ok` - return the value inside(in bytes ideally)
 
 ---
 
@@ -166,6 +176,37 @@ This does two things:
 When you type text, your computer stores it as **bytes**.
 
 Examples:
+
 - `hello` = 5 bytes (for simple English letters)
 - `hi` + Enter = `h`, `i`, `\n` = Ok(3)
+
   - The `\n` (newline character) comes from pressing Enter
+
+  ### Printing Values with println! Placeholders
+
+  - think of {} as boxes where rust will put stuff you give it.
+  - println!("x = {x}") → “Print the value of x” - Here Rust will replac {x} with whatever variable you have bound "x" to
+
+- println!("y+2 {}, y+2) → “Print the value I’m giving you next after the comma”(the curly brackets is filled with whatever you pass after the comma)
+- putting it together we have
+  `let x = 5;`
+  `let y = 10;`
+
+`println!("x = {x} and y + 2 = {} ", y + 2)`
+
+### Generating a Secret Number
+
+- A crate is a collection of Rust source code files.
+- the program we have been building is a binary crate which is an executable
+- the rand crate is a library crate and cannot be executed on it's own
+- rand 0.8.5 does not directly mean use version 0.8.5 but it's shorthand for ^0.8.5 meaning that all versions before version 0.9.0 can be used as version 0.9.0 may break our code. 0 is major version, 8 is minor version, 5 is patch.(semantic versioning)
+
+- https://crates.io/ - open source rust projects library
+
+### Generating a Random Number
+
+- use rand::Rng; - this gives us access to random number functions from the rand crate/library
+- you must write rand::Rng because the gen_range() function belongs to the Rng trait. to use it's functions, you have to import Rng
+- rand::thread_rng() gets a random number generator for this program(gives us the particular random number generator we are making use of)
+- .gen_range(1..=100) gives the random number a range from 1 to 100
+- Another neat feature of Cargo is that running the `cargo doc --open` command will build documentation provided by all your dependencies locally and open it in your browser.
